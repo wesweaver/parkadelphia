@@ -33,7 +33,7 @@
 
     <script>
 
-        var map = L.map('map').setView([39.877462, -75.243374], 16);
+        var map = L.map('map').fitBounds([[39.873969, -75.249840],[39.882139,-75.239881]]);
         L.control.layers({
             'OpenStreetMap': L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}', {
                 attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -64,6 +64,7 @@
 					newItem.properties.total_spaces = data.garages[i].total_spaces;
 					newItem.properties.ada_spaces = data.garages[i].ada_spaces;
 					newItem.properties.spaces_available = data.garages[i].spaces_available;
+					newItem.properties.popupContent = "<strong>Name: </strong>" + data.garages[i].display_name + "<br /><strong>Spaces Available : </strong>" + data.garages[i].spaces_available.split(".")[0] + "<br /><strong>Total Spaces : </strong>" + data.garages[i].total_spaces + "<br /><strong>ADA Spaces : </strong>" + data.garages[i].ada_spaces;
 					newItem.geometry = {};
 					newItem.geometry.type = "Point";
 					newItem.geometry.coordinates = [parseFloat(data.garages[i].lng),parseFloat(data.garages[i].lat)];
