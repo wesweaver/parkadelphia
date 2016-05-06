@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Proof of Concept</title>
+    <meta charset="utf-8" />
+
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+        }
+
+        #map {
+            position: absolute;
+            top: 0%;
+            bottom: 0;
+            width: 100%;
+			z-index: -1;
+        }
+		
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <script>
+
+        var map = L.map('map').setView([39.877462, -75.243374], 16);
+        L.control.layers({
+            'OpenStreetMap': L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.{ext}', {
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                subdomains: 'abcd',
+                ext: 'png'
+            }).addTo(map),
+            'Aerial': L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg', {
+                attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">'
+            })
+        }).addTo(map);
+		
+		function onEachFeature(feature, layer){
+			if (feature.properties && feature.properties.popupContent) {
+				layer.bindPopup(feature.properties.popupContent);
+			}
+		};
+			
+		var makeGeo = function (url) {
+			var newGarages = [];
+			$.getJSON(url, function (data){
+				console.log("success");
+				var arrayLength = data.garages.length;
+				for (var i = 0; i < arrayLength; i++){
+					var newItem = {};
+					newItem.type = "Feature"
+					newItem.properties = {};
+					newItem.properties.name = data.garages[i].display_name;
+					newItem.properties.total_spaces = data.garages[i].total_spaces;
+					newItem.properties.ada_spaces = data.garages[i].ada_spaces;
+					newItem.properties.spaces_available = data.garages[i].spaces_available;
+					newItem.geometry = {};
+					newItem.geometry.type = "Point";
+					newItem.geometry.coordinates = [parseFloat(data.garages[i].lng),parseFloat(data.garages[i].lat)];
+					newGarages.push(newItem);
+				};
+				console.log(newGarages);
+				L.geoJson(newGarages, {onEachFeature: onEachFeature}).addTo(map);
+			});
+		};
+		makeGeo("https://api.phila.gov/airport-parking/v1");
+		
+    </script>
+</body>
+</html>
